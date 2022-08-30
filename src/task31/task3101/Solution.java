@@ -1,7 +1,5 @@
 package task31.task3101;
 
-import com.javarush.task.task31.task3101.FileUtils;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,8 +20,8 @@ public class Solution {
         try {
             File resultFile = new File(resultFileAbsolutePath);
             File dest = new File(resultFile.getParentFile() + "/allFilesContent.txt");
-            if (com.javarush.task.task31.task3101.FileUtils.isExist(dest)) {
-                com.javarush.task.task31.task3101.FileUtils.deleteFile(dest);
+            if (FileUtils.isExist(dest)) {
+                FileUtils.deleteFile(dest);
             }
             FileUtils.renameFile(resultFile, dest);
             
