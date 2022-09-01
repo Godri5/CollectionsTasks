@@ -107,7 +107,17 @@ public class CustomTree extends AbstractList<String> implements Cloneable, Seria
                 return true;
             }
         }
-        return false;
+        boolean reAddingChildren = false;
+        for (Entry<String> entry : queue) {
+            if (entry.newLineRootElement) {
+                reAddingChildren = true;
+            }
+            if (reAddingChildren) {
+                entry.availableToAddLeftChildren = true;
+                entry.availableToAddRightChildren = true;
+            }
+        }
+        return add(s);
     }
 
     @Override
@@ -202,13 +212,148 @@ public class CustomTree extends AbstractList<String> implements Cloneable, Seria
         setValidCollection();
         return queue.size();
     }
+
+
+    @Override
+    public boolean remove(Object o) {
+        if (!(o instanceof String)) {
+            throw new UnsupportedOperationException();
+        }
+        String value = (String) o;
+        setValidCollection();
+        for (int i =0; i < queue.size(); i++) {
+            Entry<String> entry = queue.get(i);
+            if (entry.elementName.equals(value)) {
+                List<Entry<String>> list = getCollection(entry);
+                for (Entry<String> stringEntry : list) {
+                    if (stringEntry.newLineRootElement) {
+                        changeNewLineRootElement(stringEntry, list);
+                    }
+                }
+                if (entry.parent.leftChild == entry) {
+                    entry.parent.leftChild = null;
+                    setValidCollection();
+                    return true;
+                } else {
+                    entry.parent.rightChild = null;
+                    setValidCollection();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Метод removeAll удаляет все элементы из текущей коллекции queue, elementName которых входят в коллекцию с;
+     *
+     * @param c коллекция с элементами подлежащими удалению;
+     * @return true если удалился 1 и более элементов, иначе false;
+     */
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        boolean modified = false;
+        setValidCollection();
+        for (Entry<String> entry : queue) {
+            if (c.contains(entry.elementName)) {
+                remove(entry.elementName);
+                modified = true;
+            }
+        }
+        return modified;
+    }
+
+    /**
+     * Метод changeNewLineRootElement меняет boolean флаг newLineRootElement e элементов, подлежащих удалению.
+     * Новый элемент ищется по принципу: если остались элементы справа, то выбирается соседний, если не осталось,
+     * то поднимаемся на уровень выше и ищем там самый левый.
+     *
+     * @param entry   Entry<String> текущий элемент являющийся newLineRootElement;
+     * @param delList список элементов коллекции Entry<String> подлежащий удалению;
+     */
+    private void changeNewLineRootElement(Entry<String> entry, List<Entry<String>> delList) {
+        setValidCollection();
+        int size = size();
+        for (int i = 0; i < size; i++) {
+            Entry<String> newEntry = queue.get(i);
+            if (newEntry == entry) {
+                if (i < size - 1) {
+                    newEntry.newLineRootElement = false;
+                    for (int k = i + 1; k < size; k++) {
+                        Entry<String> newRootEntry = queue.get(k);
+                        if (!delList.contains(newRootEntry)) {
+                            newRootEntry.newLineRootElement = true;
+                            break;
+                        }
+                    }
+                    //Если все элементы справа подлежат удалению идем вверх по дереву:
+                    Entry<String> element = getUndelRoot(newEntry.parent, delList);
+                    element.newLineRootElement = true;
+                    break;
+                } else {
+                    newEntry.newLineRootElement = false;
+                    Entry<String> element = getUndelRoot(newEntry.parent, delList);
+                    element.newLineRootElement = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Метод getUndelRoot ищет вертикально и горизонтально первый элемент Entry<String> не входящий в лист delList
+     * (список элементов подлежащих удалению);
+     *
+     * @param entry   начальный элемент Entry<String> от которого начинается поиск;
+     * @param delList список элементов подлежащих удалению
+     * @return первый найденный верхний левый элемент Entry<String> не входящий в delList;
+     */
+    private Entry<String> getUndelRoot(Entry<String> entry, List<Entry<String>> delList) {
+        for (Entry<String> element : queue) {
+            if (element.lineNumber == entry.lineNumber) {
+                if (!delList.contains(element)) {
+                    return element;
+                }
+            }
+        }
+        if (entry.lineNumber == 0) {
+            return entry;
+        }
+        return getUndelRoot(entry.parent, delList);
+    }
     
+    /**
+     * Метод  getCollection отличается от метода setUpCollection только тем, что возвращает полученную коллекцию;
+     *
+     * @param entry начальный элемент Entry<String> для вертикального прохода по дереву.
+     * @return полученную коллекцию (List<Entry<String>>) элементов дерева.
+     */
+    private List<Entry<String>> getCollection(Entry<String> entry) {
+        ArrayList<Entry<String>> list = new ArrayList<>();
+        Queue<Entry<String>> subQueue = new LinkedList<>();
+        list.add(entry);
+        subQueue.add(entry);
+        do {
+            if (!subQueue.isEmpty()) {
+                entry = subQueue.poll();
+            }
+            if (entry.leftChild != null) {
+                list.add(entry.leftChild);
+                subQueue.add(entry.leftChild);
+            }
+            if (entry.rightChild != null) {
+                list.add(entry.rightChild);
+                subQueue.add(entry.rightChild);
+            }
+        } while (!subQueue.isEmpty());
+        return list;
+    }
+
     @Override
     public String remove(int index) {
         throw new UnsupportedOperationException();
     }
 
-   
 
     @Override
     public List<String> subList(int fromIndex, int toIndex) {
