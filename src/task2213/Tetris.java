@@ -8,6 +8,14 @@ public class Tetris {
         
     }
 
+    public void run() {
+
+    }
+
+    public void step() {
+        
+    }
+
     public Field getField() {
         return field;
     }
