@@ -5,6 +5,22 @@ public class Field {
     private int height;
     private int[][] matrix;
 
+    public void print() {
+
+    }
+
+    public void removeFullLines() {
+
+    }
+
+    public Integer getValue(int x, int y) {
+        return null;
+    }
+
+    public void setValue(int x, int y, int value) {
+
+    }
+
     public Field(int width, int height) {
         this.width = width;
         this.height = height;
