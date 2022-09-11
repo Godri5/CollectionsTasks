@@ -5,13 +5,23 @@ public class Figure {
     private int y;
     private int[][] matrix = new int[3][3];
 
-    public void left() {}
+    public void left() {
+        if (isCurrentPositionAvailable())
+            x -= 1;
+    }
 
-    public void right() {}
+    public void right() {
+        if (isCurrentPositionAvailable())
+            x += 1;
+    }
 
-    public void up() {}
+    public void up() {
+        y -= 1;
+    }
 
-    public void down() {}
+    public void down() {
+        y += 1;
+    }
 
     public void rotate() {}
 
