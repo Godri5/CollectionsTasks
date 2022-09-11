@@ -5,6 +5,22 @@ public class Figure {
     private int y;
     private int[][] matrix = new int[3][3];
 
+    public void left() {}
+
+    public void right() {}
+
+    public void up() {}
+
+    public void down() {}
+
+    public void rotate() {}
+
+    public void downMaximum() {}
+
+    public boolean isCurrentPositionAvailable() {return true;}
+
+    public void landed() {}
+
     public Figure(int x, int y, int[][] matrix) {
         this.x = x;
         this.y = y;
