@@ -21,7 +21,7 @@ public class Solution {
 
     public static <T> T convertFromXmlToNormal(String xmlData, Class<T> clazz) throws IOException, JAXBException {
         StringReader reader = new StringReader(xmlData);
-        
+
         JAXBContext context = JAXBContext.newInstance(clazz);
         Unmarshaller unmarshaller = context.createUnmarshaller();
 
