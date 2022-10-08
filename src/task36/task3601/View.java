@@ -4,7 +4,7 @@ public class View {
     private Controller controller = new Controller();
 
     public void fireShowDataEvent() {
-        System.out.println(con.onShowDataList());
+        //System.out.println(con.onShowDataList());
     }
 
 }
