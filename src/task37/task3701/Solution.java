@@ -65,7 +65,7 @@ public class Solution<T> extends ArrayList<T> {
             if (lastRet < 0)
                 throw new IllegalStateException();
             checkForComodification();
-            
+
             try {
                 Solution.this.remove(lastRet);
                 cursor = lastRet;
