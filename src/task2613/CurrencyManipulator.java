@@ -1,7 +1,8 @@
 package task2613;
 
-import java.util.Map;
-import java.util.TreeMap;
+import com.javarush.task.task26.task2613.exception.NotEnoughMoneyException;
+
+import java.util.*;
 
 public class CurrencyManipulator {
     private String currencyCode;
@@ -30,5 +31,53 @@ public class CurrencyManipulator {
             result += ((int) cash.getKey()) * ((int) cash.getValue());
         }
         return result;
+    }
+    
+    public boolean hasMoney() {
+        return !denominations.isEmpty();
+    }
+
+    public boolean isAmountAvailable(int expectedAmount) {
+        return expectedAmount <= getTotalAmount();
+    }
+
+    public Map<Integer, Integer> withdrawAmount(int expectedAmount) throws NotEnoughMoneyException{
+        HashMap<Integer, Integer> copyMap = new HashMap<>(denominations);
+        ArrayList<Integer> keys = new ArrayList<>(this.denominations.keySet());
+        
+        Collections.sort(keys);
+        Collections.reverse(keys);
+        
+        TreeMap<Integer, Integer> resultMap = new TreeMap<>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o2.compareTo(o1);
+            }
+        });
+        
+        for (Integer denomination : keys) {
+            int value = copyMap.get(denomination);
+            while (true) {
+                if (expectedAmount < denomination || value == 0) {
+                    copyMap.put(denomination, value);
+                    break;
+                }
+                expectedAmount -= denomination;
+                value--;
+                
+                if (resultMap.containsKey(denomination))
+                    resultMap.put(denomination, resultMap.get(denomination) + 1);
+                else 
+                    resultMap.put(denomination, 1);
+            }
+        }
+        
+        if (expectedAmount > 0) 
+            throw new NotEnoughMoneyException();
+        else {
+            this.denominations.clear();
+            this.denominations.putAll(copyMap);
+        }
+        return resultMap;
     }
 }
